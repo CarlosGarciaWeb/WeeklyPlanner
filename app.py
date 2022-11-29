@@ -1,8 +1,12 @@
 from flask import Flask, render_template, request, url_for, redirect
 from pymongo import MongoClient
-from datetime import datetime as dtt, date as dt, time as t
+from datetime import datetime as dtt, date as dt, time as t, timedelta
 import time
 from collections import defaultdict
+
+
+#TODO: Ultimate goal is to learn Javascript in order to create a countdown timer in screen and show current progress
+#TODO: Render form and dates to organize planner
 
 
 print(dtt.today(), dt.today, f"\n\n")
@@ -22,7 +26,7 @@ taskManager = defaultdict(dict)
 
 dayManager = defaultdict(list)
 
-appRunning = True
+appRunning = False
 
 while appRunning:
     today_date = returnToday()
@@ -48,11 +52,47 @@ while appRunning:
         appRunning = False
 
 
-print(f"Finally\n\n\n")
+# print(f"Finally\n\n\n")
 
-print(f"You have the following tasks... {[(task, taskTime) for task, taskTime in taskManager[returnToday()].items()]}\n\n\n")
+# print(f"You have the following tasks... {[(task, taskTime) for task, taskTime in taskManager[returnToday()].items()]}\n\n\n")
 
-print(f"For a total of.. {sum(dayManager[returnToday()])}")
+# print(f"For a total of.. {sum(dayManager[returnToday()])}")
+
+
+test_list = ["Task1", "Task2"]
+
+
+@app.context_processor
+def calc_dateRange():
+    def selectDates(startDate: dtt):
+        dates_list = [startDate + timedelta(days=diff) for diff in range(-3,4)]
+        dates_list.reverse()
+        return dates_list
+    return {"date_range": selectDates}
+
+
+
+@app.route("/")
+def home():
+    dates_string = request.args.get("date")
+    if dates_string:
+        selected_date = dtt.fromisoformat(dates_string)
+    else:
+        selected_date = returnToday()
+
+    return render_template('home.html', selected_date=selected_date, title="WeeklyPlanner | Home", test_list=test_list)
 
 
     
+
+
+
+@app.route("/add-task")
+def addTask():
+    return render_template('add.html')
+
+
+
+@app.route("/visualize")
+def viewData():
+    return render_template('view.html')

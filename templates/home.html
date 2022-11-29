@@ -1,0 +1,26 @@
+{% extends 'layout.html' %}
+
+{% block content %}
+
+<div class="planner">
+<section class="dates">
+    {% for date in date_range(selected_date) %}
+    <li class="date__list">
+    <a href="{{ url_for('home', date=date) }}" class="dates__link">
+        <time class="date">
+            <span>{{ date.strftime('%b') }}</span>
+            <span>{{ date.strftime('%a') }}</span>
+            <span>{{ date.strftime('%d') }}</span>
+        </time>
+    </a>
+    </li>
+    {% endfor %}
+</section>
+<section class="tasks">
+    {% for testItem in test_list %}
+        <p class="task__name">{{ testItem }}</p>
+    {% endfor %}
+</section>
+</div>
+
+{% endblock content %}
