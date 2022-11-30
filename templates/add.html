@@ -1,0 +1,25 @@
+{% extends "layout.html" %}
+
+
+{% block content %}
+
+<form method="POST" class="form form__date">
+    <label class="form__date" for="date">
+        Choose date:
+        <input type="date" name="date" id="" value="{{ selectedDate.strftime('%Y-%m-%d') or '' }}">
+    </label>
+    <button class="form__button form__date" type="submit">Choose date</button>
+</form>
+
+
+<form method="POST" class="form">
+    <textarea class="form__input" name="task" id="" cols="30" rows="3" placeholder="Add a task"></textarea>
+    <select class="form__select" name="hour" id="">
+        {% for hours in list_hours %}
+        <option value="{{hours}}">{{hours}} hour</option>
+        {% endfor %}
+    </select>
+    <button class="form__button" type="submit">Add Task</button>
+</form>
+
+{% endblock content %}

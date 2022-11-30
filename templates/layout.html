@@ -17,7 +17,7 @@
             <a class="header__link" href="{{ url_for('viewData') }}">Visualize</a>
         </div>
         {% if "add" not in request.endpoint %}
-            <a class="header__link" href="{{ url_for('addTask') }}">+ Add task</a>
+            <a class="header__link" href="{{ url_for('addTask', date=selected_date, hours=hoursAvailable) }}">+ Add task</a>
         {% endif %}
     </header>
     <main class="main">

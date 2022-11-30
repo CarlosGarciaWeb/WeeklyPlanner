@@ -6,11 +6,11 @@
 <section class="dates">
     {% for date in date_range(selected_date) %}
     <li class="date__list">
-    <a href="{{ url_for('home', date=date) }}" class="dates__link">
+    <a href="{{ url_for('home', date=date) }}" class="dates__link {{ 'dates__link--current' if loop.index0 == 3 else '' }} {{ 'dates__link--today' if date == todays_day else '' }}">
         <time class="date">
-            <span>{{ date.strftime('%b') }}</span>
-            <span>{{ date.strftime('%a') }}</span>
-            <span>{{ date.strftime('%d') }}</span>
+            <span class="date__span">{{ date.strftime('%b') }}</span>
+            <span class="date__span">{{ date.strftime('%a') }}</span>
+            <span class="date__span">{{ date.strftime('%d') }}</span>
         </time>
     </a>
     </li>
