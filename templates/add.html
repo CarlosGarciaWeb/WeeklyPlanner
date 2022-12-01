@@ -11,6 +11,7 @@
     <button class="form__button form__date" type="submit">Choose date</button>
 </form>
 
+{% if list_hours %}
 
 <form method="POST" class="form">
     <textarea class="form__input" name="task" id="" cols="30" rows="3" placeholder="Add a task"></textarea>
@@ -21,5 +22,5 @@
     </select>
     <button class="form__button" type="submit">Add Task</button>
 </form>
-
+{% endif %}
 {% endblock content %}
