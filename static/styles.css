@@ -119,6 +119,21 @@ li:not(:last-child) {
     height: 4em;
 }
 
+.task__button {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+	font-size: inherit;
+	background-color: #F5EBE0;
+	cursor: pointer;
+	border-radius: 6px;
+	border: none;
+	align-self: flex-end;
+    margin: 1rem;
+}
+
 .planning {
     display: flex;
     flex-direction: row;

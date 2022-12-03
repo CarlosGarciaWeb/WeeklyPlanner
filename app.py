@@ -7,7 +7,7 @@ import uuid
 import os
 
 #TODO: Ultimate goal is to learn Javascript in order to create a countdown timer in screen and show current progress
-#TODO: Render form and dates to organize planner
+#TODO: Option to select if task repeats and the periodicity
 
 
 app = Flask(__name__)
@@ -47,17 +47,17 @@ def home():
     else:
         selected_date = returnToday()
     todays_day = returnToday()
+
+
     current_task_date_object = app.db.taskManager.find_one({"date": selected_date})
     if not current_task_date_object:
         app.db.taskManager.insert_one(create_task_date_syntax(date=selected_date, hours=possible_hours))
         current_task_date_object = app.db.taskManager.find_one({"date": selected_date})
     current_task_manager = current_task_date_object["taskManager"]
     if current_task_manager:
-        task_lists = [(task["name"],task["length"]) for task in current_task_manager.values()]
+        task_lists = [(task["name"],int(task["length"]), task["_id"]) for task in current_task_manager.values()]
     else:
         task_lists = []
-
-
 
     if selected_date == todays_day:
         tomorrows_date = todays_day + timedelta(days=1)
@@ -72,24 +72,23 @@ def home():
     else:
         preview_tasks = []
 
+    print(1)
 
-    
+    completions = app.db.completedTasks.find_one({"date": todays_day})
+    if completions is None:
+        completions = []
+    else:
+        completions = completions["tasksCompleted"]
+
     return render_template(
         'home.html', 
         selected_date=selected_date, 
         title="WeeklyPlanner | Home", 
         task_list=task_lists,
         todays_day=todays_day,
-        preview=preview_tasks
+        preview=preview_tasks,
+        completions=completions
     )
-
-
-    
-# myquery = { "address": "Valley 345" }
-# newvalues = { "$set": { "address": "Canyon 123" } }
-
-# mycol.update_one(myquery, newvalues)
-
 
 
 @app.route("/add-task", methods=["GET", "POST"])
@@ -138,6 +137,35 @@ def addTask():
         return redirect(url_for("addTask", selectedDate=selectedDate))
     return render_template('add.html', selectedDate=selectedDate, list_hours=hours_list_available)
 
+
+def complete_task_syntax(date: dtt):
+    return {"date": date, "tasksCompleted": []}
+
+@app.route("/complete", methods=["POST"])
+def complete():
+    task_complete = request.form.get("taskID")
+    print(task_complete)
+    date_completed = returnToday()
+    date_query = {"date": date_completed}
+    completed_obj_exists = app.db.completedTasks.find_one(date_query)
+    if completed_obj_exists:
+        task_list = completed_obj_exists["tasksCompleted"]
+        task_list.append(task_complete)
+        print(task_list)
+        update_obj = {"$set": {"tasksCompleted": task_list}}
+        app.db.completedTasks.update_one(date_query, update_obj)
+    else:
+        app.db.completedTasks.insert_one(complete_task_syntax(date_completed))
+        completed_obj_exists = app.db.completedTasks.find_one(date_query)
+        print(completed_obj_exists)
+        task_list = completed_obj_exists["tasksCompleted"]
+        task_list.append(task_complete)
+        print(task_list)
+        update_obj = {"$set": {"tasksCompleted": task_list}}
+        app.db.completedTasks.update_one(date_query, update_obj)
+    # {"_id": ... , tasksCompleted: [taskID, taskID]}
+
+    return redirect(url_for("home"))
 
 
 @app.route("/visualize")
