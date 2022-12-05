@@ -66,15 +66,15 @@ def home():
             app.db.taskManager.insert_one(create_task_date_syntax(date=selected_date, hours=possible_hours))
     else:
         preview_task_object = app.db.taskManager.find_one({"date": todays_day})
-    preview_task_manager = preview_task_object["taskManager"]
-    if preview_task_manager:
+
+    if preview_task_object:
+        preview_task_manager = preview_task_object["taskManager"]
         preview_tasks = [(task["name"], task["length"]) for task in preview_task_manager.values()]
     else:
         preview_tasks = []
 
-    print(1)
 
-    completions = app.db.completedTasks.find_one({"date": todays_day})
+    completions = app.db.completedTasks.find_one({"date": selected_date})
     if completions is None:
         completions = []
     else:
