@@ -136,7 +136,7 @@ def addTask():
         updatedValues = {"$set": {"taskManager": current_task_manager, "hoursTaken": current_hours_taken, "hoursAvailable": current_hours_available}}
         app.db.taskManager.update_one(query_date, updatedValues) 
 
-        return redirect(url_for("addTask", selectedDate=selectedDate))
+        return redirect(url_for("addTask", date=selectedDate))
     return render_template('add.html', selectedDate=selectedDate, list_hours=hours_list_available)
 
 
