@@ -5,14 +5,16 @@ import time
 from collections import defaultdict
 import uuid
 import os
+from dotenv import load_dotenv
 
 #TODO: Ultimate goal is to learn Javascript in order to create a countdown timer in screen and show current progress
 #TODO: Option to select if task repeats and the periodicity
 
+load_dotenv()
 
 app = Flask(__name__)
 
-mongo_address = os.environ.get("MONGODB_ADDRESS")
+mongo_address = os.getenv("MONGODB_ADDRESS")
 
 client = MongoClient(mongo_address)
 
@@ -171,3 +173,7 @@ def complete():
 @app.route("/visualize")
 def viewData():
     return render_template('view.html')
+
+
+if __name__ == "__main__":
+    app.run()
