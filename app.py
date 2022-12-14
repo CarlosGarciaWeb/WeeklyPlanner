@@ -52,6 +52,9 @@ def home():
 
 
     current_task_date_object = app.db.taskManager.find_one({"date": selected_date})
+
+    print(current_task_date_object)
+
     if not current_task_date_object:
         app.db.taskManager.insert_one(create_task_date_syntax(date=selected_date, hours=possible_hours))
         current_task_date_object = app.db.taskManager.find_one({"date": selected_date})
@@ -102,14 +105,20 @@ def addTask():
         selectedDate = returnToday()
     query_date = {"date": selectedDate}
     date_task_object = app.db.taskManager.find_one(query_date)
+    query_id = date_task_object['_id']
+    
     if not date_task_object:
         app.db.taskManager.insert_one(create_task_date_syntax(date=selectedDate, hours=possible_hours))
         date_task_object = app.db.taskManager.find_one(query_date)
+        query_id = date_task_object['_id']
+
     hours_list_available = date_task_object["hoursAvailable"]
+    query_id = {"_id": query_id}
     if request.method == "POST" and "date" in request.form:
         response = request.form.get("date")
         date_formated = dtt.fromisoformat(response)
         return redirect(url_for("addTask", date=date_formated))
+
     if request.method == "POST" and "task" in request.form:
         response = (request.form.get("task"), int(request.form.get("hour")))
         idTask = uuid.uuid4().hex
@@ -134,19 +143,32 @@ def addTask():
 
 
         updatedValues = {"$set": {"taskManager": current_task_manager, "hoursTaken": current_hours_taken, "hoursAvailable": current_hours_available}}
-        app.db.taskManager.update_one(query_date, updatedValues) 
+        app.db.taskManager.update_one(query_id, updatedValues) 
 
         return redirect(url_for("addTask", date=selectedDate))
     return render_template('add.html', selectedDate=selectedDate, list_hours=hours_list_available)
 
 
+
+
+# @app.route("/progress", methods=["POST", "GET"])
+# def progress():
+#     task_progress = request.form.get("taskID")
+#     return render_template("progress.html")
+
+
+
 def complete_task_syntax(date: dtt):
     return {"date": date, "tasksCompleted": []}
+
+
+
+
+
 
 @app.route("/complete", methods=["POST"])
 def complete():
     task_complete = request.form.get("taskID")
-    print(task_complete)
     date_completed = returnToday()
     date_query = {"date": date_completed}
     completed_obj_exists = app.db.completedTasks.find_one(date_query)
