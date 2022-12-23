@@ -178,5 +178,6 @@ li:not(:last-child) {
 }
 
 
-
-
+.active_timer {
+    color: #3A4F7A;
+}

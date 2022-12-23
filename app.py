@@ -44,6 +44,7 @@ def create_task_date_syntax(date: dtt, hours: list):
 @app.route("/")
 def home():
     dates_string = request.args.get("date")
+    taskID = request.args.get("taskID")
     if dates_string:
         selected_date = dtt.fromisoformat(dates_string)
     else:
@@ -92,7 +93,8 @@ def home():
         task_list=task_lists,
         todays_day=todays_day,
         preview=preview_tasks,
-        completions=completions
+        completions=completions,
+        taskID=taskID
     )
 
 
@@ -105,12 +107,12 @@ def addTask():
         selectedDate = returnToday()
     query_date = {"date": selectedDate}
     date_task_object = app.db.taskManager.find_one(query_date)
-    query_id = date_task_object['_id']
     
     if not date_task_object:
         app.db.taskManager.insert_one(create_task_date_syntax(date=selectedDate, hours=possible_hours))
         date_task_object = app.db.taskManager.find_one(query_date)
-        query_id = date_task_object['_id']
+    
+    query_id = date_task_object['_id']
 
     hours_list_available = date_task_object["hoursAvailable"]
     query_id = {"_id": query_id}
@@ -174,22 +176,24 @@ def complete():
     completed_obj_exists = app.db.completedTasks.find_one(date_query)
     if completed_obj_exists:
         task_list = completed_obj_exists["tasksCompleted"]
-        task_list.append(task_complete)
-        print(task_list)
-        update_obj = {"$set": {"tasksCompleted": task_list}}
-        app.db.completedTasks.update_one(date_query, update_obj)
+        if task_complete not in task_list:
+            task_list.append(task_complete)
+            print(task_list)
+            update_obj = {"$set": {"tasksCompleted": task_list}}
+            app.db.completedTasks.update_one(date_query, update_obj)
     else:
         app.db.completedTasks.insert_one(complete_task_syntax(date_completed))
         completed_obj_exists = app.db.completedTasks.find_one(date_query)
         print(completed_obj_exists)
         task_list = completed_obj_exists["tasksCompleted"]
-        task_list.append(task_complete)
-        print(task_list)
-        update_obj = {"$set": {"tasksCompleted": task_list}}
-        app.db.completedTasks.update_one(date_query, update_obj)
+        if task_complete not in task_list:
+            task_list.append(task_complete)
+            print(task_list)
+            update_obj = {"$set": {"tasksCompleted": task_list}}
+            app.db.completedTasks.update_one(date_query, update_obj)
     # {"_id": ... , tasksCompleted: [taskID, taskID]}
 
-    return redirect(url_for("home"))
+    return redirect(url_for("home", taskID=task_complete))
 
 
 @app.route("/visualize")
