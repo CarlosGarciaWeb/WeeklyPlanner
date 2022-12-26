@@ -69,7 +69,7 @@ def home():
         tomorrows_date = todays_day + timedelta(days=1)
         preview_task_object = app.db.taskManager.find_one({"date": tomorrows_date})
         if not preview_task_object:
-            app.db.taskManager.insert_one(create_task_date_syntax(date=selected_date, hours=possible_hours))
+            preview_task_object = None
     else:
         preview_task_object = app.db.taskManager.find_one({"date": todays_day})
 
