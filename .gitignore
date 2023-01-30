@@ -2,4 +2,6 @@
 .dockerignore
 Dockerfile
 *.cer
-
+venv/
+__pycache__
+.vscode

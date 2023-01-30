@@ -6,6 +6,10 @@ from collections import defaultdict
 import uuid
 import os
 from dotenv import load_dotenv
+from pytz import timezone
+
+# Get the time zone from the client's location
+client_timezone = timezone('US/Eastern')
 
 #TODO: Ultimate goal is to learn Javascript in order to create a countdown timer in screen and show current progress
 #TODO: Option to select if task repeats and the periodicity
@@ -21,8 +25,9 @@ client = MongoClient(mongo_address)
 app.db = client.flask
 
 def returnToday():
-    today = dtt.today()
+    today = dtt.now(client_timezone)
     return dtt(today.year, today.month, today.day)
+
 
 possible_hours = [hour for hour in range(1,9)]
 
